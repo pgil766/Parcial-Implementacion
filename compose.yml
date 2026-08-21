@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: racing-league-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-racing_league}
+      POSTGRES_USER: ${DB_USERNAME:-racing_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - racing-league-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-racing_user} -d ${DB_NAME:-racing_league}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - racing-league-net
+
+volumes:
+  racing-league-db-data:
+    name: racing-league-db-data
+
+networks:
+  racing-league-net:
+    name: racing-league-net
