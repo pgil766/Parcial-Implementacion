@@ -18,12 +18,13 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Seed de datos iniciales (1 admin, 1 organizer, 1 viewer, 5 dwarfs, 2 camels, 2 medium, 2 equipos, 3 carreras)
 
 ## Fase 2 — Autenticación y seguridad (Módulo 1)
-- [ ] Registro y login
-- [ ] Hashing de contraseñas (BCrypt)
-- [ ] Generación y validación de tokens (JWT u otro)
-- [ ] Middleware/filtro de autorización por rol
-- [ ] Endpoints: /api/auth/register, /login, /refresh, /profile
-- [ ] Tests: 401 sin token, permisos por rol
+- [x] Registro y login
+- [x] Hashing de contraseñas (BCrypt)
+- [x] Generación y validación de tokens (JWT access + refresh, con claim `type`)
+- [x] Middleware/filtro de autorización por rol (`JwtAuthenticationFilter` + `@EnableMethodSecurity`)
+- [x] Endpoints: /api/auth/register, /login, /refresh, /profile
+- [x] Tests: 401 sin token (18 tests de auth pasando; el test de *permisos por rol*
+      llega en Fase 3, cuando existan endpoints con `@PreAuthorize` que restringir)
 
 ## Fase 3 — Competidores (Módulo 2)
 - [ ] CRUD completo con DTOs
