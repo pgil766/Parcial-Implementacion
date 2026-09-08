@@ -14,39 +14,32 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 
 ## Próximo paso inmediato
 
-**Empezar la Fase 3 (Competidores, Módulo 2 del spec).** Antes de codear: plantear
-el plan (entidades ya existen de Fase 1, faltan DTOs/service/controller/reglas de
-negocio/tests) y esperar aprobación — así lo pide `context/CLAUDE.md`. No asumas
-que el usuario ya aprobó nada de Fase 3 solo porque este archivo lo liste como
-"siguiente"; sigue siendo una fase nueva que requiere plan + luz verde explícita.
+**Empezar la Fase 4 (Equipos, Módulo 3 del spec).** Antes de codear: plantear
+entidades, endpoints y reglas de negocio, y esperar aprobación explícita. La Fase 3
+está implementada y verificada; no avances de módulo sin nueva aprobación.
 
-**Antes de nada, revisa `git status`.** La Fase 2 (todo `security/`, `dto/`,
-`exception/`, `controller/`, `service/`, más los ajustes de `DataSeeder`,
-`application.yml`, `.env.example`) está terminada y verificada pero **todavía sin
-commitear** a fecha de este párrafo — el usuario dijo explícitamente que él hace
-los commits/push, no tú. Si en tu sesión ya aparece commiteada, ignora esta nota;
-si no, no la recommitees tú tampoco, solo continúa trabajando sobre ese estado.
+**Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
+no toques git/GitHub salvo que lo pida explícitamente.
 
-## Checklist real verificado (no confíes en "está casi listo" — cuenta tú mismo)
 
-`docs/TASKS.md` tiene 61 ítems `[ ]`/`[x]` en total. Estado verificado por conteo
-directo (no por impresión general):
+## Checklist real verificado
+
+`docs/TASKS.md` tiene 61 ítems `[ ]`/`[x]`. Estado actual:
 
 | Fase | Items | Fase | Items |
 |---|---|---|---|
 | 0 — Setup | ✅ 5/5 | 7 — Resultados | ❌ 0/4 |
-| 1 — Modelo de datos | 4/5 (falta diagrama ER) | 8 — Auditoría | ❌ 0/2 |
+| 1 — Modelo de datos | 4/5 (ER pendiente) | 8 — Auditoría | ❌ 0/2 |
 | 2 — Auth | ✅ 6/6 | 9 — Errores globales | ❌ 0/3 |
-| 3 — Competidores | ❌ 0/4 | 10 — Frontend | ❌ 0/12 |
+| 3 — Competidores | ✅ 4/4 | 10 — Frontend | ❌ 0/12 |
 | 4 — Equipos | ❌ 0/3 | 11 — Docker completo | ❌ 0/4 |
 | 5 — Carreras | ❌ 0/3 | 12 — Testing final | ❌ 0/2 |
 | 6 — Inscripciones | ❌ 0/3 | 13 — Documentación | ❌ 0/5 |
 
-Solo existen dos controllers/services en todo el código: ninguno — literalmente
-solo `AuthController`/`AuthService`. No hay `CompetitorController`, `TeamController`,
-`RaceController`, etc. No tomes atajos asumiendo que "ya debe estar" algo de las
-fases 3-13: no está, cuenta los archivos si tienes dudas
-(`find backend/src/main/java -name "*Controller.java"`).
+La implementación actual tiene `AuthController`/`AuthService` y
+`CompetitorController`/`CompetitorService`. Los módulos de equipos, carreras,
+inscripciones, resultados, auditoría y frontend todavía no tienen superficie
+funcional; verifica archivos antes de asumir que existen.
 
 ## Qué es el proyecto
 
@@ -66,12 +59,9 @@ real y se evalúa en serio.
 | Testing | JUnit 5 + Mockito (mínimo 15 tests significativos) |
 | Contenedores | Docker + Docker Compose (`compose.yml`, no `docker-compose.yml`) |
 
-## Estado actual (última actualización: tras Fase 2)
-
-- **Fases 0, 1 y 2 completas.** Fases 0-1 ya están en `main`
-  (`https://github.com/pgil766/Parcial-Implementacion.git`); la Fase 2 está hecha y
-  verificada pero **sin commitear** — el usuario hace los commits y push él mismo,
-  no toques git/GitHub salvo que te lo pida explícitamente.
+- **Fases 0, 1, 2 y 3 están implementadas y verificadas.** Fase 1 conserva el
+  diagrama ER pendiente. Fases 0-1 ya están en `main`; las fases posteriores siguen
+  sin commit porque el usuario hace commits y push.
 - Backend generado en `backend/` vía Spring Initializr, con Maven Wrapper
   (`./mvnw` / `mvnw.cmd`) — **no asumas Maven global instalado**, usa siempre el
   wrapper. JDK 21 (Temurin) sí quedó instalado en la máquina de desarrollo.
@@ -105,41 +95,39 @@ real y se evalúa en serio.
     `UserProfileResponse` — ninguno expone `passwordHash`.
   - `service/AuthService` + `controller/AuthController`:
     `POST /api/auth/register|login|refresh`, `GET /api/auth/profile`.
-  - `exception/`: `ApiError` (formato del spec §5), `DuplicateResourceException` (409),
-    `InvalidCredentialsException` (401) y `GlobalExceptionHandler`. **Ojo:** el handler
-    tiene un `@ExceptionHandler(AccessDeniedException.class)` explícito; sin él, el
-    catch-all de `Exception` convertiría los 403 de `@PreAuthorize` en 500.
-  - Registro público crea **siempre VIEWER** (si dejara elegir rol, cualquiera se
-    haría ADMIN). Login usa el mismo mensaje para usuario inexistente y password
-    mala, para no permitir enumerar usuarios.
-  - **No hay endpoint de logout**: con JWT stateless el cliente simplemente descarta
-    los tokens (lo hará la GUI en Fase 10).
-- `application.yml` parametrizado 100% por variables de entorno
+  - Registro público crea siempre `VIEWER`; login usa el mismo mensaje para usuario
+    inexistente y password mala.
+  - No hay endpoint de logout: con JWT stateless el cliente descarta los tokens.
+- **Fase 3 (competidores) implementada:**
+  - `CompetitorController` expone CRUD, cambio de estado y lecturas autenticadas.
+  - `CompetitorService` normaliza y asegura nickname único, filtra/pagina/ordena,
+    devuelve `teamId` opcional desde membresía activa y protege eliminaciones con
+    resultados, inscripciones o membresías.
+  - Mutaciones restringidas a `ADMIN`; respuestas usan DTOs y errores estructurados.
+  - La regla de elegibilidad `ACTIVE` queda en el flujo de inscripciones de Fase 6.
+  - Tests actuales: 21 de competidores, 40 en total; suite verificada contra
+    PostgreSQL real.
+- `application.yml` está parametrizado por variables de entorno
   (`DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD/JWT_SECRET/JWT_EXPIRATION/
-  SERVER_PORT`), `ddl-auto=update` (no hay Flyway/Liquibase — no están en el
-  alcance elegido, son bonus opcionales del spec §12).
-- `compose.yml` en la raíz: **solo el servicio `db`** por ahora. Falta el backend
-  (Dockerfile propio, Fase 11) y el frontend.
-- Todo verificado contra Postgres real (no H2): `./mvnw test` pasa con **19 tests**
-  (18 significativos + 1 smoke), tablas/FKs/constraints/índices confirmados con `psql`,
-  y los endpoints de auth probados end-to-end con `curl` contra la app corriendo.
-- Diagrama entidad-relación: **pendiente**, no generado aún.
+  SERVER_PORT`), con `ddl-auto=update`.
+- `compose.yml` todavía contiene solo PostgreSQL; backend y frontend corresponden a
+  Fase 11.
+- El diagrama entidad-relación sigue pendiente.
 
-## Estado objetivo (lo que falta — ver `docs/TASKS.md` para el detalle fase por fase)
+## Estado objetivo
 
-Fases 3 a 13, en orden, una a la vez (0-2 ya están hechas):
+Fases pendientes, en orden y una a la vez:
 
-3. Competidores (CRUD + reglas de negocio + filtrado/paginación).
-4. Equipos (CRUD + gestión de miembros vía `TeamMember`).
-5. Carreras (CRUD + máquina de estados `RaceStatus`).
-6. Inscripciones (`RaceRegistration` + aprobación/rechazo).
-7. Resultados y clasificaciones (`RaceResult` + sistema de puntos del spec §Módulo 6).
+4. Equipos (CRUD y gestión de miembros vía `TeamMember`).
+5. Carreras (CRUD y máquina de estados `RaceStatus`).
+6. Inscripciones (`RaceRegistration`, aprobación/rechazo y elegibilidad ACTIVE).
+7. Resultados y clasificaciones (`RaceResult` y sistema de puntos).
 8. Log de auditoría (`AuditLog`, solo lectura para ADMIN).
-9. Manejo de errores global (`exception/`, formato estructurado del spec §5).
-10. Frontend React (todas las pantallas del spec §Módulo 7).
-11. Dockerización completa (Dockerfiles backend+frontend, `compose.yml` final).
-12. Testing (mínimo 15 tests significativos, cubrir casos sugeridos del spec §8).
-13. Documentación y entrega (README, diagrama ER, Postman, video demo).
+9. Manejo global completo de errores y validaciones.
+10. Frontend React.
+11. Dockerización completa.
+12. Revisión final de cobertura y tests.
+13. Documentación y entrega.
 
 ## Reglas no negociables (repetidas de `context/CLAUDE.md`, por si no se lee)
 

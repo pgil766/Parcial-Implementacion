@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface RaceResultRepository extends JpaRepository<RaceResult, Long> {
 
     List<RaceResult> findByRaceId(Long raceId);
+    boolean existsByRegistrationCompetitorId(Long competitorId);
 }

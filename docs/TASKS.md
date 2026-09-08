@@ -27,10 +27,10 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
       llega en Fase 3, cuando existan endpoints con `@PreAuthorize` que restringir)
 
 ## Fase 3 — Competidores (Módulo 2)
-- [ ] CRUD completo con DTOs
-- [ ] Reglas de negocio: nickname único, solo ACTIVE se inscribe, no eliminar si tiene resultados
-- [ ] Filtrado, paginación, ordenamiento
-- [ ] Tests: crear válido, rechazar peso inválido, rechazar nickname duplicado
+- [x] CRUD completo con DTOs
+- [x] Reglas de negocio: nickname único y eliminación física protegida por resultados, inscripciones o membresías; la elegibilidad `ACTIVE` se valida al inscribir en Fase 6
+- [x] Filtrado, paginación, ordenamiento
+- [x] Tests: 21 tests de competidores; suite total de 40 tests pasando
 
 ## Fase 4 — Equipos (Módulo 3)
 - [ ] CRUD + gestión de miembros
