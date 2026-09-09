@@ -38,9 +38,10 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Tests correspondientes (5 pruebas unitarias de TeamService)
 
 ## Fase 5 — Carreras (Módulo 4)
-- [ ] CRUD + transiciones de estado (PATCH status)
-- [ ] Reglas de negocio: fecha futura, deadline < inicio, no editar si COMPLETED
-- [ ] Tests: rechazar carrera en el pasado, transiciones de estado inválidas
+- [x] CRUD + transiciones de estado (PATCH status)
+- [x] Reglas de negocio: fecha futura, deadline < inicio, no editar si COMPLETED; capacidad, tipo y organizador consistentes
+- [x] Concurrencia: bloqueo pesimista en mutaciones y protección del historial oficial
+- [x] Tests: 10 pruebas unitarias de RaceService; suite total de 56 tests pasando
 
 ## Fase 6 — Inscripciones (Módulo 5)
 - [ ] Endpoints de inscripción, aprobación, rechazo

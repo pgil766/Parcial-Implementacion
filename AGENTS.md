@@ -14,14 +14,15 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 
 ## Próximo paso inmediato
 
-**Fase 4 (Equipos, Módulo 3) implementada y revisada.** Incluye DTOs, CRUD,
-gestión histórica de miembros, límites de capacidad, autorización ADMIN para
-mutaciones y bloqueo pesimista de la fila del equipo al agregar miembros, evitando
-exceder `maxMembers` bajo solicitudes concurrentes. La regla de mínimo un
-participante antes de entrar a una carrera queda pendiente de aplicar en el flujo
-de carreras/inscripciones.
+**Fase 5 (Carreras, Módulo 4) implementada y verificada.** Incluye DTOs,
+CRUD REST, autorización ADMIN/RACE_ORGANIZER, validación contextual de fechas,
+transiciones de estado, mínimo de dos participantes aprobados para iniciar y
+resultados oficiales requeridos para completar. Las mutaciones bloquean la fila
+con pesimismo; también se protegen capacidad, compatibilidad de tipo, historial
+oficial y cambios de nombre. La regla de mínimo un participante antes de entrar
+a una carrera queda pendiente de aplicar en el flujo de inscripciones.
 
-**Siguiente paso: Fase 5 (Carreras).** Presentar el plan del módulo y esperar
+**Siguiente paso: Fase 6 (Inscripciones).** Presentar el plan del módulo y esperar
 aprobación explícita antes de codear.
 
 **Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
@@ -35,13 +36,13 @@ no toques git/GitHub salvo que lo pida explícitamente.
 | 2 — Auth | ✅ 6/6 | 9 — Errores globales | ❌ 0/3 |
 | 3 — Competidores | ✅ 4/4 | 10 — Frontend | ❌ 0/12 |
 | 4 — Equipos | ✅ 3/3 | 11 — Docker completo | ❌ 0/4 |
-| 5 — Carreras | ❌ 0/3 | 12 — Testing final | ❌ 0/2 |
+| 5 — Carreras | ✅ 3/3 | 12 — Testing final | ❌ 0/2 |
 | 6 — Inscripciones | ❌ 0/3 | 13 — Documentación | ❌ 0/5 |
 
 La implementación funcional cubre `AuthController`/`AuthService`,
-`CompetitorController`/`CompetitorService` y ahora `TeamController`/`TeamService`.
-Carreras, inscripciones, resultados, auditoría y frontend aún no tienen superficie
-funcional; verifica archivos antes de asumir que existen.
+`CompetitorController`/`CompetitorService`, `TeamController`/`TeamService` y
+`RaceController`/`RaceService`. Inscripciones, resultados, auditoría y frontend
+aún no tienen superficie funcional; verifica archivos antes de asumir que existen.
 
 ## Qué es el proyecto
 
@@ -61,9 +62,9 @@ real y se evalúa en serio.
 | Testing | JUnit 5 + Mockito (mínimo 15 tests significativos) |
 | Contenedores | Docker + Docker Compose (`compose.yml`, no `docker-compose.yml`) |
 
-- **Fases 0, 1, 2 y 3 están implementadas y verificadas.** Fase 1 conserva el
-  diagrama ER pendiente. Fases 0-1 ya están en `main`; las fases posteriores siguen
-  sin commit porque el usuario hace commits y push.
+**Fases 0, 1, 2, 3, 4 y 5 están implementadas y verificadas.** Fase 1 conserva el
+diagrama ER pendiente. Fases 0-1 ya están en `main`; las fases posteriores siguen
+sin commit porque el usuario hace commits y push.
 - Backend generado en `backend/` vía Spring Initializr, con Maven Wrapper
   (`./mvnw` / `mvnw.cmd`) — **no asumas Maven global instalado**, usa siempre el
   wrapper. JDK 21 (Temurin) sí quedó instalado en la máquina de desarrollo.
@@ -107,7 +108,15 @@ real y se evalúa en serio.
     resultados, inscripciones o membresías.
   - Mutaciones restringidas a `ADMIN`; respuestas usan DTOs y errores estructurados.
   - La regla de elegibilidad `ACTIVE` queda en el flujo de inscripciones de Fase 6.
-- Tests actuales: 46 en total; suite completa verificada contra PostgreSQL 16 real.
+- **Fase 5 (carreras) implementada:**
+  - `RaceController` y `RaceService` exponen CRUD, transiciones estrictas de
+    `RaceStatus`, validación de fechas/capacidad y respuestas DTO.
+  - Mutaciones restringidas a `ADMIN`/`RACE_ORGANIZER`; cambios y borrados bloquean
+    la fila con pesimismo para preservar invariantes ante concurrencia.
+  - No permite reducir capacidad bajo inscripciones aprobadas ni cambiar el tipo
+    incompatiblemente; carreras completadas y con historial oficial no se editan
+    ni eliminan.
+- Tests actuales: 56 en total; suite completa verificada contra PostgreSQL 16 real.
 - `application.yml` está parametrizado por variables de entorno
   (`DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD/JWT_SECRET/JWT_EXPIRATION/
   SERVER_PORT`), con `ddl-auto=update`.
