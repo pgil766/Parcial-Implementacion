@@ -41,12 +41,12 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] CRUD + transiciones de estado (PATCH status)
 - [x] Reglas de negocio: fecha futura, deadline < inicio, no editar si COMPLETED; capacidad, tipo y organizador consistentes
 - [x] Concurrencia: bloqueo pesimista en mutaciones y protección del historial oficial
-- [x] Tests: 10 pruebas unitarias de RaceService; suite total de 56 tests pasando
+- [x] Tests: 10 pruebas unitarias de RaceService; suite total de 65 tests pasando
 
 ## Fase 6 — Inscripciones (Módulo 5)
-- [ ] Endpoints de inscripción, aprobación, rechazo
-- [ ] Reglas de negocio: no duplicados, tipo debe coincidir, posiciones de salida únicas
-- [ ] Tests: inscribir competidor activo, rechazar suspendido, rechazar duplicado, rechazar tras deadline
+- [x] Endpoints de inscripción, aprobación, rechazo
+- [x] Reglas de negocio: elegibilidad ACTIVE, no duplicados, tipo debe coincidir, posiciones de salida únicas y razón de rechazo
+- [x] Tests: 9 pruebas unitarias; suite total de 65 tests pasando
 
 ## Fase 7 — Resultados y clasificaciones (Módulo 6)
 - [ ] Registro de resultados + cálculo de puntos

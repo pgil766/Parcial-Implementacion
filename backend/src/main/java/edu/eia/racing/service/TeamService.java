@@ -6,8 +6,10 @@ import edu.eia.racing.dto.TeamResponse;
 import edu.eia.racing.exception.DuplicateResourceException;
 import edu.eia.racing.exception.ResourceNotFoundException;
 import edu.eia.racing.model.Competitor;
+import edu.eia.racing.model.RaceRegistration;
 import edu.eia.racing.model.Team;
 import edu.eia.racing.model.TeamMember;
+import edu.eia.racing.model.enums.RegistrationStatus;
 import edu.eia.racing.model.enums.TeamStatus;
 import edu.eia.racing.repository.CompetitorRepository;
 import edu.eia.racing.repository.RaceRegistrationRepository;
@@ -85,6 +87,17 @@ public class TeamService {
                 .orElseThrow(() -> new ResourceNotFoundException("Team not found: " + teamId));
         Competitor competitor = competitorRepository.findByIdForUpdate(competitorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Competitor not found: " + competitorId));
+        for (RaceRegistration registration : raceRegistrationRepository.findByTeamId(teamId)) {
+            if (registration.getStatus() == RegistrationStatus.PENDING
+                    || registration.getStatus() == RegistrationStatus.APPROVED) {
+                if (raceRegistrationRepository.existsByRaceIdAndCompetitorIdAndStatusIn(
+                        registration.getRace().getId(), competitorId,
+                        List.of(RegistrationStatus.PENDING, RegistrationStatus.APPROVED))) {
+                    throw new DuplicateResourceException(
+                            "Competitor is already registered individually for this race");
+                }
+            }
+        }
         if (team.getStatus() != TeamStatus.ACTIVE) {
             throw new DuplicateResourceException("Only active teams can add members");
         }
