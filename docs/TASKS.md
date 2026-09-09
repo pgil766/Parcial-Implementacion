@@ -65,17 +65,26 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 
 ## Fase 10 — Frontend / GUI (Módulo 7)
 - [ ] Login + manejo de token
-- [ ] Dashboard
-- [ ] Pantallas de competidores (lista, detalle, crear/editar)
-- [ ] Pantallas de equipos
-- [ ] Pantallas de carreras (lista, detalle, crear/editar)
+- [ ] Dashboard conectado al REST API
+- [ ] Pantallas de competidores (lista, detalle operativo, crear/editar)
+- [ ] Pantallas de equipos (lista, detalle operativo y gestión de miembros)
+- [ ] Pantallas de carreras (lista, detalle operativo, crear/editar)
 - [ ] Gestión de inscripciones
 - [ ] Registro de resultados
 - [ ] Standings/leaderboard
 - [ ] Perfil + logout
 - [ ] Pantallas de acceso denegado / 404
-- [ ] Estados de carga, vacío y error en todas las listas
+- [ ] Estados de carga, vacío y error en las listas principales
 - [ ] Ocultar/deshabilitar acciones según rol
+
+> Frontend funcional en `frontend/`: React/Vite, cliente JWT, CRUD de
+> competidores/carreras, gestión de equipos, inscripciones, resultados,
+> standings, perfil y estados de acceso.
+>
+> **Pausa de verificación:** la implementación de Fase 10 quedó terminada,
+> pero la prueba final (`npm install`, `npm run build` y smoke test) se pospone
+> por indisponibilidad temporal del registry npm. Esta verificación queda como
+> última prueba de Fase 10 y no bloquea el inicio de la Fase 11.
 
 ## Fase 11 — Dockerización completa
 - [ ] Dockerfile backend

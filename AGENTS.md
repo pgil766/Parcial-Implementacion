@@ -14,7 +14,7 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 
 ## Estado actual y próximo paso
 
-**Fases 0 a 7 están implementadas en código.** La Fase 6 (Inscripciones,
+**Fases 0 a 9 están implementadas en código.** La Fase 6 (Inscripciones,
 Módulo 5) incluye endpoints REST, aprobación/rechazo, elegibilidad `ACTIVE`,
 validación de equipos, compatibilidad de tipo, prevención de duplicados
 individual/equipo, posiciones de salida únicas, razones de rechazo y protección
@@ -26,23 +26,31 @@ registro/actualización/consulta de resultados, reglas de carrera y participante
 posiciones únicas, cálculo de puntos y standings generales, de competidores y
 equipos.
 
-**Siguiente paso: Fase 8 (Auditoría, Módulo 8).** No iniciar hasta revisar los
-resultados de Fase 7 y confirmar sus validaciones.
+**Fase 8 (Auditoría) y Fase 9 (errores globales) están implementadas.**
+
+**Fase 10 (Frontend / GUI) está implementada en código** bajo `frontend/`,
+incluyendo autenticación JWT, dashboard, CRUD operativo, equipos,
+inscripciones, resultados, standings, perfil y estados 403/404. Queda una
+última prueba pendiente: instalar dependencias npm, compilar y ejecutar smoke
+test cuando el registry npm vuelva a estar disponible.
+
+**Siguiente paso: Fase 11 (Dockerización completa).** La prueba final de Fase 10
+se ejecutará posteriormente y no bloquea el avance de desarrollo.
 
 **Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
 no toques git/GitHub salvo que lo pida explícitamente.
 
 | Fase | Items | Fase | Items |
-| 4 — Equipos | ✅ 3/3 | 11 — Docker completo | ❌ 0/4 |
-| 5 — Carreras | ✅ 3/3 | 12 — Testing final | ❌ 0/2 |
-| 6 — Inscripciones | ✅ 3/3 | 13 — Documentación | ❌ 0/5 |
-| 7 — Resultados | ✅ 4/4 |  |  |
+|---|---:|---|---:|
+| 8 — Auditoría | ✅ 2/2 | 11 — Docker completo | ❌ 0/4 |
+| 9 — Errores globales | ✅ 3/3 | 12 — Testing final | ❌ 0/2 |
+| 10 — Frontend | ⏸️ implementación lista / prueba final pendiente | 13 — Documentación | ❌ 0/5 |
 
 La implementación funcional cubre `AuthController`/`AuthService`,
 `CompetitorController`/`CompetitorService`, `TeamController`/`TeamService`,
-`RaceController`/`RaceService`, `RegistrationController`/`RegistrationService`
-y `ResultController`/`ResultService`. Auditoría y frontend aún no tienen
-superficie funcional.
+`RaceController`/`RaceService`, `RegistrationController`/`RegistrationService`,
+`ResultController`/`ResultService` y el cliente React en `frontend/`.
+La última verificación del frontend queda pendiente por la red npm.
 
 La suite completa ejecuta 73 pruebas y pasa con PostgreSQL 16 levantado mediante
 `DB_PORT=55432 DB_PASSWORD=change-me`. El puerto 5432 local estaba ocupado, por
