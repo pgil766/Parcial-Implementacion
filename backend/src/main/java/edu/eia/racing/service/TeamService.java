@@ -81,7 +81,8 @@ public class TeamService {
 
     @Transactional
     public TeamResponse addMember(Long teamId, Long competitorId) {
-        Team team = getTeam(teamId);
+        Team team = teamRepository.findByIdForUpdate(teamId)
+                .orElseThrow(() -> new ResourceNotFoundException("Team not found: " + teamId));
         Competitor competitor = competitorRepository.findByIdForUpdate(competitorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Competitor not found: " + competitorId));
         if (team.getStatus() != TeamStatus.ACTIVE) {

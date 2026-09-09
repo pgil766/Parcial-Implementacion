@@ -61,7 +61,7 @@ class TeamServiceTest {
     @Test
     void addMemberRejectsCompetitorAlreadyInAnotherActiveTeam() {
         Team team = team(1L, "One");
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(team));
         when(competitorRepository.findByIdForUpdate(2L))
                 .thenReturn(Optional.of(Competitor.builder().id(2L).build()));
         when(teamMemberRepository.findByCompetitorIdAndActiveTrue(2L))
@@ -74,7 +74,7 @@ class TeamServiceTest {
     @Test
     void addMemberRejectsWhenCapacityIsReached() {
         Team team = team(1L, "One");
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(team));
         when(competitorRepository.findByIdForUpdate(2L))
                 .thenReturn(Optional.of(Competitor.builder().id(2L).build()));
         when(teamMemberRepository.findByCompetitorIdAndActiveTrue(2L)).thenReturn(Optional.empty());

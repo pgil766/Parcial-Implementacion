@@ -14,10 +14,12 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 
 ## Próximo paso inmediato
 
-**Fase 4 (Equipos, Módulo 3 del spec) implementada.** Incluye DTOs, CRUD,
-gestión histórica de miembros, límites de capacidad y autorización ADMIN para
-mutaciones. La regla de mínimo un participante antes de entrar a una carrera
-queda pendiente de aplicar en el flujo de carreras/inscripciones.
+**Fase 4 (Equipos, Módulo 3) implementada y revisada.** Incluye DTOs, CRUD,
+gestión histórica de miembros, límites de capacidad, autorización ADMIN para
+mutaciones y bloqueo pesimista de la fila del equipo al agregar miembros, evitando
+exceder `maxMembers` bajo solicitudes concurrentes. La regla de mínimo un
+participante antes de entrar a una carrera queda pendiente de aplicar en el flujo
+de carreras/inscripciones.
 
 **Siguiente paso: Fase 5 (Carreras).** Presentar el plan del módulo y esperar
 aprobación explícita antes de codear.
@@ -105,8 +107,7 @@ real y se evalúa en serio.
     resultados, inscripciones o membresías.
   - Mutaciones restringidas a `ADMIN`; respuestas usan DTOs y errores estructurados.
   - La regla de elegibilidad `ACTIVE` queda en el flujo de inscripciones de Fase 6.
-  - Tests actuales: 21 de competidores, 40 en total; suite verificada contra
-    PostgreSQL real.
+- Tests actuales: 46 en total; suite completa verificada contra PostgreSQL 16 real.
 - `application.yml` está parametrizado por variables de entorno
   (`DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD/JWT_SECRET/JWT_EXPIRATION/
   SERVER_PORT`), con `ddl-auto=update`.
