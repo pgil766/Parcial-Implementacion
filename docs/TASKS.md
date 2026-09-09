@@ -87,10 +87,15 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 > última prueba de Fase 10 y no bloquea el inicio de la Fase 11.
 
 ## Fase 11 — Dockerización completa
-- [ ] Dockerfile backend
-- [ ] Dockerfile frontend (si aplica)
-- [ ] `compose.yml` final con todos los servicios, red, volumen nombrado
+- [x] Dockerfile backend
+- [x] Dockerfile frontend (si aplica)
+- [x] `compose.yml` final con todos los servicios, red, volumen nombrado
 - [ ] Verificar que `docker compose up -d` levanta TODO desde cero
+
+> Implementación Docker completada y revisada. `docker compose config -q`,
+> validación sintáctica de ambos Dockerfiles y empaquetado backend pasan.
+> El build completo y el smoke test desde cero quedan pendientes porque el
+> registry npm agotó el tiempo de espera al resolver dependencias frontend.
 
 ## Fase 12 — Testing (mínimo 15 tests significativos)
 - [ ] Revisar cobertura contra la lista de casos sugeridos en el spec
