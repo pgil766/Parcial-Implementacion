@@ -21,6 +21,7 @@ import edu.eia.racing.model.enums.RoleName;
 import edu.eia.racing.repository.RaceRegistrationRepository;
 import edu.eia.racing.repository.RaceRepository;
 import edu.eia.racing.repository.RaceResultRepository;
+import edu.eia.racing.repository.TeamMemberRepository;
 import edu.eia.racing.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,13 +38,15 @@ class RaceServiceTest {
     @Mock RaceRepository raceRepository;
     @Mock RaceRegistrationRepository raceRegistrationRepository;
     @Mock RaceResultRepository raceResultRepository;
+    @Mock TeamMemberRepository teamMemberRepository;
     @Mock UserRepository userRepository;
 
     private RaceService service;
 
     @BeforeEach
     void setUp() {
-        service = new RaceService(raceRepository, raceRegistrationRepository, raceResultRepository, userRepository);
+        service = new RaceService(raceRepository, raceRegistrationRepository, raceResultRepository,
+                teamMemberRepository, userRepository);
     }
 
     @Test

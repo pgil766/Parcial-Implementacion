@@ -21,6 +21,7 @@ import edu.eia.racing.model.enums.TeamStatus;
 import edu.eia.racing.repository.CompetitorRepository;
 import edu.eia.racing.repository.RaceRegistrationRepository;
 import edu.eia.racing.repository.RaceRepository;
+import edu.eia.racing.repository.RaceResultRepository;
 import edu.eia.racing.repository.TeamMemberRepository;
 import edu.eia.racing.repository.TeamRepository;
 import edu.eia.racing.repository.UserRepository;
@@ -42,6 +43,8 @@ public class RegistrationService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
+    private final RaceResultRepository raceResultRepository;
+
 
     @Transactional
     public RegistrationResponse create(Long raceId, RegistrationRequest request, String username) {
@@ -132,6 +135,9 @@ public class RegistrationService {
     @Transactional
     public void delete(Long id) {
         RaceRegistration registration = getRegistrationForUpdate(id);
+        if (raceResultRepository.existsByRegistrationId(id)) {
+            throw new InvalidRequestException("Registrations with official results cannot be deleted");
+        }
         if (registration.getStatus() == RegistrationStatus.APPROVED
                 && registration.getRace().getStatus() == RaceStatus.IN_PROGRESS) {
             throw new InvalidRequestException("Approved registrations cannot be removed after the race starts");
@@ -175,9 +181,7 @@ public class RegistrationService {
     private void validateParticipantNotRegistered(List<RaceRegistration> registrations,
             RegistrationParticipant participant, Long ignoredRegistrationId) {
         for (RaceRegistration existing : registrations) {
-            if (Objects.equals(existing.getId(), ignoredRegistrationId)
-                    || existing.getStatus() == RegistrationStatus.REJECTED
-                    || existing.getStatus() == RegistrationStatus.CANCELLED) {
+            if (Objects.equals(existing.getId(), ignoredRegistrationId)) {
                 continue;
             }
             if (participant.competitor() != null) {

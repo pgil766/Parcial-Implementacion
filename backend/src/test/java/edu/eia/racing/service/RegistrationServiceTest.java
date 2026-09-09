@@ -26,6 +26,7 @@ import edu.eia.racing.model.enums.RoleName;
 import edu.eia.racing.repository.CompetitorRepository;
 import edu.eia.racing.repository.RaceRegistrationRepository;
 import edu.eia.racing.repository.RaceRepository;
+import edu.eia.racing.repository.RaceResultRepository;
 import edu.eia.racing.repository.TeamMemberRepository;
 import edu.eia.racing.repository.TeamRepository;
 import edu.eia.racing.repository.UserRepository;
@@ -47,6 +48,7 @@ class RegistrationServiceTest {
     @Mock TeamRepository teamRepository;
     @Mock TeamMemberRepository teamMemberRepository;
     @Mock UserRepository userRepository;
+    @Mock RaceResultRepository raceResultRepository;
 
     private RegistrationService service;
     private Race race;
@@ -56,7 +58,7 @@ class RegistrationServiceTest {
     @BeforeEach
     void setUp() {
         service = new RegistrationService(registrationRepository, raceRepository, competitorRepository,
-                teamRepository, teamMemberRepository, userRepository);
+                teamRepository, teamMemberRepository, userRepository, raceResultRepository);
         race = Race.builder().id(10L).type(RaceType.INDIVIDUAL).status(RaceStatus.OPEN_FOR_REGISTRATION)
                 .registrationDeadline(LocalDateTime.now().plusHours(1)).maxParticipants(3).build();
         competitor = Competitor.builder().id(20L).name("Byte").nickname("byte")
@@ -183,5 +185,15 @@ class RegistrationServiceTest {
         assertEquals(RegistrationStatus.REJECTED, response.status());
         assertEquals("Competitor is unavailable", response.notes());
         assertEquals(null, response.startingPosition());
+    }
+    @Test
+    void deleteRejectsRegistrationWithOfficialResult() {
+        RaceRegistration approved = RaceRegistration.builder().id(70L).race(race).competitor(competitor)
+                .status(RegistrationStatus.APPROVED).build();
+        when(registrationRepository.findByIdForUpdate(70L)).thenReturn(Optional.of(approved));
+        when(raceResultRepository.existsByRegistrationId(70L)).thenReturn(true);
+
+        assertThrows(InvalidRequestException.class, () -> service.delete(70L));
+        verify(registrationRepository, never()).delete(any());
     }
 }

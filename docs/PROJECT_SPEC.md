@@ -81,6 +81,12 @@ config
 - Protección de rutas (usuarios no autorizados no pueden abrir páginas restringidas).
 - Validación en frontend — mejora UX pero **no reemplaza** la validación del backend.
 
+### Gestión mínima de usuarios
+- [ ] ADMIN puede listar usuarios.
+- [ ] ADMIN puede modificar rol/estado según el alcance definido.
+- [ ] Otros roles no pueden administrar usuarios.
+- [ ] Tests de autorización correspondientes.
+
 ## 4. Módulos Funcionales Obligatorios (mínimo 7)
 
 ### Módulo 1 — Autenticación y Seguridad
@@ -526,3 +532,12 @@ testing, usuarios de ejemplo, ejemplos de requests API, limitaciones conocidas, 
 - No hay tests automatizados significativos.
 - Solo un miembro del equipo entiende la aplicación.
 - La aplicación funciona exclusivamente en la computadora de "el compañero que no vino hoy".
+
+
+**Expectativas de usabilidad:**
+- Navegación y jerarquía visual consistentes.
+- Tipografía legible y contraste suficiente.
+- Todos los campos de formulario deben tener labels.
+- En web, los formularios deben ser accesibles por teclado.
+- Diseño responsive recomendado.
+- Toda la interfaz debe sentirse como un producto coherente, no como pantallas independientes.

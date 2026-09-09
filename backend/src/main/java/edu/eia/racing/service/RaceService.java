@@ -6,14 +6,18 @@ import edu.eia.racing.exception.DuplicateResourceException;
 import edu.eia.racing.exception.InvalidRequestException;
 import edu.eia.racing.exception.ResourceNotFoundException;
 import edu.eia.racing.model.Race;
+import edu.eia.racing.model.RaceRegistration;
+import edu.eia.racing.model.TeamMember;
 import edu.eia.racing.model.User;
+import edu.eia.racing.model.enums.CompetitorStatus;
 import edu.eia.racing.model.enums.RaceStatus;
+import edu.eia.racing.model.enums.RaceType;
 import edu.eia.racing.model.enums.RegistrationStatus;
 import edu.eia.racing.model.enums.RoleName;
-import edu.eia.racing.model.enums.RaceType;
 import edu.eia.racing.repository.RaceRegistrationRepository;
 import edu.eia.racing.repository.RaceRepository;
 import edu.eia.racing.repository.RaceResultRepository;
+import edu.eia.racing.repository.TeamMemberRepository;
 import edu.eia.racing.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
@@ -33,6 +37,8 @@ public class RaceService {
     private final RaceRepository raceRepository;
     private final RaceRegistrationRepository raceRegistrationRepository;
     private final RaceResultRepository raceResultRepository;
+    private final TeamMemberRepository teamMemberRepository;
+
     private final UserRepository userRepository;
 
     @Transactional
@@ -133,13 +139,14 @@ public class RaceService {
             throw new DuplicateResourceException("Invalid race status transition: " + current + " -> " + target);
         }
         if (target == RaceStatus.IN_PROGRESS) {
-            long approved = raceRegistrationRepository.findByRaceId(race.getId()).stream()
+            List<RaceRegistration> approvedRegistrations = raceRegistrationRepository.findByRaceId(race.getId()).stream()
                     .filter(registration -> registration.getStatus() == RegistrationStatus.APPROVED)
-                    .count();
-            if (approved < 2) {
+                    .toList();
+            validateApprovedEligibility(approvedRegistrations);
+            if (approvedRegistrations.size() < 2) {
                 throw new DuplicateResourceException("At least two approved participants are required to start");
             }
-            if (approved > race.getMaxParticipants()) {
+            if (approvedRegistrations.size() > race.getMaxParticipants()) {
                 throw new DuplicateResourceException("Race capacity cannot be exceeded");
             }
         }
@@ -147,6 +154,26 @@ public class RaceService {
             throw new DuplicateResourceException("Race cannot be completed without official results");
         }
         race.setStatus(target);
+    }
+
+    private void validateApprovedEligibility(List<RaceRegistration> registrations) {
+        for (RaceRegistration registration : registrations) {
+            if (registration.getCompetitor() != null) {
+                if (registration.getCompetitor().getStatus() != CompetitorStatus.ACTIVE) {
+                    throw new InvalidRequestException("All approved competitors must remain active before the race starts");
+                }
+                continue;
+            }
+            if (registration.getTeam() == null
+                    || registration.getTeam().getStatus() != edu.eia.racing.model.enums.TeamStatus.ACTIVE) {
+                throw new InvalidRequestException("All approved teams must remain active before the race starts");
+            }
+            List<TeamMember> members = teamMemberRepository.findByTeamIdAndActiveTrue(registration.getTeam().getId());
+            if (members.isEmpty()
+                    || members.stream().anyMatch(member -> member.getCompetitor().getStatus() != CompetitorStatus.ACTIVE)) {
+                throw new InvalidRequestException("All approved teams must have active competitors before the race starts");
+            }
+        }
     }
 
     private void validateCreateDates(RaceRequest request) {

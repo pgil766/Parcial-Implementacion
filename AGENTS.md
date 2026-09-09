@@ -12,37 +12,41 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 3. `docs/TASKS.md` — checklist de las 14 fases del plan. Marca `[x]` al terminar cada
    ítem verificado (compila + tests pasan), no antes.
 
-## Próximo paso inmediato
+## Estado actual y próximo paso
 
-**Fase 5 (Carreras, Módulo 4) implementada y verificada.** Incluye DTOs,
-CRUD REST, autorización ADMIN/RACE_ORGANIZER, validación contextual de fechas,
-transiciones de estado, mínimo de dos participantes aprobados para iniciar y
-resultados oficiales requeridos para completar. Las mutaciones bloquean la fila
-con pesimismo; también se protegen capacidad, compatibilidad de tipo, historial
-oficial y cambios de nombre. La regla de mínimo un participante antes de entrar
-a una carrera queda pendiente de aplicar en el flujo de inscripciones.
+**Fases 0 a 7 están implementadas en código.** La Fase 6 (Inscripciones,
+Módulo 5) incluye endpoints REST, aprobación/rechazo, elegibilidad `ACTIVE`,
+validación de equipos, compatibilidad de tipo, prevención de duplicados
+individual/equipo, posiciones de salida únicas, razones de rechazo y protección
+del historial con resultados. La transición a `IN_PROGRESS` revalida la
+elegibilidad de todas las inscripciones aprobadas.
 
-**Siguiente paso: Fase 6 (Inscripciones).** Presentar el plan del módulo y esperar
-aprobación explícita antes de codear.
+**Fase 7 (Resultados y clasificaciones, Módulo 6) está implementada.** Incluye
+registro/actualización/consulta de resultados, reglas de carrera y participante,
+posiciones únicas, cálculo de puntos y standings generales, de competidores y
+equipos.
+
+**Siguiente paso: Fase 8 (Auditoría, Módulo 8).** No iniciar hasta revisar los
+resultados de Fase 7 y confirmar sus validaciones.
 
 **Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
 no toques git/GitHub salvo que lo pida explícitamente.
 
-
 | Fase | Items | Fase | Items |
-|---|---|---|---|
-| 0 — Setup | ✅ 5/5 | 7 — Resultados | ❌ 0/4 |
-| 1 — Modelo de datos | 4/5 (ER pendiente) | 8 — Auditoría | ❌ 0/2 |
-| 2 — Auth | ✅ 6/6 | 9 — Errores globales | ❌ 0/3 |
-| 3 — Competidores | ✅ 4/4 | 10 — Frontend | ❌ 0/12 |
 | 4 — Equipos | ✅ 3/3 | 11 — Docker completo | ❌ 0/4 |
 | 5 — Carreras | ✅ 3/3 | 12 — Testing final | ❌ 0/2 |
-| 6 — Inscripciones | ❌ 0/3 | 13 — Documentación | ❌ 0/5 |
+| 6 — Inscripciones | ✅ 3/3 | 13 — Documentación | ❌ 0/5 |
+| 7 — Resultados | ✅ 4/4 |  |  |
 
 La implementación funcional cubre `AuthController`/`AuthService`,
-`CompetitorController`/`CompetitorService`, `TeamController`/`TeamService` y
-`RaceController`/`RaceService`. Inscripciones, resultados, auditoría y frontend
-aún no tienen superficie funcional; verifica archivos antes de asumir que existen.
+`CompetitorController`/`CompetitorService`, `TeamController`/`TeamService`,
+`RaceController`/`RaceService`, `RegistrationController`/`RegistrationService`
+y `ResultController`/`ResultService`. Auditoría y frontend aún no tienen
+superficie funcional.
+
+La suite completa ejecuta 73 pruebas y pasa con PostgreSQL 16 levantado mediante
+`DB_PORT=55432 DB_PASSWORD=change-me`. El puerto 5432 local estaba ocupado, por
+lo que la validación usó el puerto alterno sin modificar archivos de configuración.
 
 ## Qué es el proyecto
 
@@ -62,9 +66,9 @@ real y se evalúa en serio.
 | Testing | JUnit 5 + Mockito (mínimo 15 tests significativos) |
 | Contenedores | Docker + Docker Compose (`compose.yml`, no `docker-compose.yml`) |
 
-**Fases 0, 1, 2, 3, 4 y 5 están implementadas y verificadas.** Fase 1 conserva el
-diagrama ER pendiente. Fases 0-1 ya están en `main`; las fases posteriores siguen
-sin commit porque el usuario hace commits y push.
+**Fases 0, 1, 2, 3, 4, 5, 6 y 7 están implementadas.** Fase 1 conserva el
+diagrama ER pendiente. Las fases posteriores a la 1 siguen sin commit porque el
+usuario hace commits y push.
 - Backend generado en `backend/` vía Spring Initializr, con Maven Wrapper
   (`./mvnw` / `mvnw.cmd`) — **no asumas Maven global instalado**, usa siempre el
   wrapper. JDK 21 (Temurin) sí quedó instalado en la máquina de desarrollo.
@@ -116,7 +120,20 @@ sin commit porque el usuario hace commits y push.
   - No permite reducir capacidad bajo inscripciones aprobadas ni cambiar el tipo
     incompatiblemente; carreras completadas y con historial oficial no se editan
     ni eliminan.
-- Tests actuales: 56 en total; suite completa verificada contra PostgreSQL 16 real.
+- **Fase 6 (inscripciones) implementada:**
+  - `RegistrationController` y `RegistrationService` cubren creación, consulta,
+    aprobación, rechazo, elegibilidad, posiciones y eliminación protegida.
+  - La transición a `IN_PROGRESS` revalida competidores, equipos y miembros activos.
+  - Inscripciones con resultados oficiales no pueden eliminarse; los duplicados
+    respetan las constraints de persistencia y no se permiten reintentos en la misma
+    carrera.
+- **Fase 7 (resultados y standings) implementada:**
+  - `ResultController` y `ResultService` cubren registro, actualización y consulta.
+  - Solo acepta inscripciones aprobadas en carreras `IN_PROGRESS`; aplica posiciones
+    únicas, estados válidos y puntos 10/7/5/3/1.
+  - Expone standings generales, de competidores y de equipos.
+- Tests actuales: 73 descubiertos; la suite completa pasa con PostgreSQL 16 levantado
+  mediante `DB_PORT=55432 DB_PASSWORD=change-me`.
 - `application.yml` está parametrizado por variables de entorno
   (`DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD/JWT_SECRET/JWT_EXPIRATION/
   SERVER_PORT`), con `ddl-auto=update`.
@@ -128,10 +145,6 @@ sin commit porque el usuario hace commits y push.
 
 Fases pendientes, en orden y una a la vez:
 
-4. Equipos (CRUD y gestión de miembros vía `TeamMember`).
-5. Carreras (CRUD y máquina de estados `RaceStatus`).
-6. Inscripciones (`RaceRegistration`, aprobación/rechazo y elegibilidad ACTIVE).
-7. Resultados y clasificaciones (`RaceResult` y sistema de puntos).
 8. Log de auditoría (`AuditLog`, solo lectura para ADMIN).
 9. Manejo global completo de errores y validaciones.
 10. Frontend React.
