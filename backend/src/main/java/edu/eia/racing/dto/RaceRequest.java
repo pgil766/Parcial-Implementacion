@@ -19,6 +19,6 @@ public record RaceRequest(
         Integer maxParticipants,
         @NotNull(message = "Race type is required") RaceType type,
         RaceStatus status,
-        @NotNull(message = "Organizer is required") Long organizerId,
+        @NotNull(message = "Organizer is required") @Positive(message = "Organizer ID must be positive") Long organizerId,
         @NotNull(message = "Registration deadline is required") LocalDateTime registrationDeadline) {
 }

@@ -59,9 +59,9 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Endpoint paginado de auditoría restringido a ADMIN
 
 ## Fase 9 — Manejo de errores global
-- [ ] Exception handler centralizado con formato estructurado del spec
-- [ ] Mapeo correcto de códigos HTTP (400/401/403/404/409)
-- [ ] Validaciones con anotaciones (@NotNull, @NotBlank, @Positive, etc.)
+- [x] Exception handler centralizado con formato estructurado del spec
+- [x] Mapeo correcto de códigos HTTP (400/401/403/404/409)
+- [x] Validaciones con anotaciones (@NotNull, @NotBlank, @Positive, etc.)
 
 ## Fase 10 — Frontend / GUI (Módulo 7)
 - [ ] Login + manejo de token

@@ -7,6 +7,7 @@ import edu.eia.racing.model.enums.CompetitorStatus;
 import edu.eia.racing.model.enums.CompetitorType;
 import edu.eia.racing.service.CompetitorService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/competitors")
+@Validated
 @RequiredArgsConstructor
 public class CompetitorController {
 
@@ -49,27 +52,27 @@ public class CompetitorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompetitorResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<CompetitorResponse> findById(@PathVariable @Positive Long id) {
         return ResponseEntity.ok(competitorService.findById(id));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CompetitorResponse> update(@PathVariable Long id,
+    public ResponseEntity<CompetitorResponse> update(@PathVariable @Positive Long id,
             @Valid @RequestBody CompetitorRequest request) {
         return ResponseEntity.ok(competitorService.update(id, request));
     }
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CompetitorResponse> updateStatus(@PathVariable Long id,
+    public ResponseEntity<CompetitorResponse> updateStatus(@PathVariable @Positive Long id,
             @Valid @RequestBody CompetitorStatusRequest request) {
         return ResponseEntity.ok(competitorService.updateStatus(id, request.status()));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
         competitorService.delete(id);
         return ResponseEntity.noContent().build();
     }

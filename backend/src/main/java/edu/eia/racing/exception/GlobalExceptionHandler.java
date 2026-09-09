@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,6 +39,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiError> handleDuplicate(DuplicateResourceException ex, HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, ex.getMessage(), request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException ex,
+            HttpServletRequest request) {
+        return build(HttpStatus.CONFLICT, "The request conflicts with existing data", request);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
@@ -76,7 +83,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<ApiError> handleMethodValidation(HandlerMethodValidationException ex,
             HttpServletRequest request) {
-        return build(HttpStatus.BAD_REQUEST, "Invalid request parameters", request);
+        String message = ex.getParameterValidationResults().stream()
+                .flatMap(result -> result.getResolvableErrors().stream()
+                        .map(error -> result.getMethodParameter().getParameterName() + ": "
+                                + error.getDefaultMessage()))
+                .collect(Collectors.joining("; "));
+        return build(HttpStatus.BAD_REQUEST, message, request);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
