@@ -8,4 +8,5 @@ public interface RaceRegistrationRepository extends JpaRepository<RaceRegistrati
 
     List<RaceRegistration> findByRaceId(Long raceId);
     boolean existsByCompetitorId(Long competitorId);
+    boolean existsByTeamId(Long teamId);
 }

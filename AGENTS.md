@@ -14,17 +14,17 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 
 ## Próximo paso inmediato
 
-**Empezar la Fase 4 (Equipos, Módulo 3 del spec).** Antes de codear: plantear
-entidades, endpoints y reglas de negocio, y esperar aprobación explícita. La Fase 3
-está implementada y verificada; no avances de módulo sin nueva aprobación.
+**Fase 4 (Equipos, Módulo 3 del spec) implementada.** Incluye DTOs, CRUD,
+gestión histórica de miembros, límites de capacidad y autorización ADMIN para
+mutaciones. La regla de mínimo un participante antes de entrar a una carrera
+queda pendiente de aplicar en el flujo de carreras/inscripciones.
+
+**Siguiente paso: Fase 5 (Carreras).** Presentar el plan del módulo y esperar
+aprobación explícita antes de codear.
 
 **Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
 no toques git/GitHub salvo que lo pida explícitamente.
 
-
-## Checklist real verificado
-
-`docs/TASKS.md` tiene 61 ítems `[ ]`/`[x]`. Estado actual:
 
 | Fase | Items | Fase | Items |
 |---|---|---|---|
@@ -32,13 +32,13 @@ no toques git/GitHub salvo que lo pida explícitamente.
 | 1 — Modelo de datos | 4/5 (ER pendiente) | 8 — Auditoría | ❌ 0/2 |
 | 2 — Auth | ✅ 6/6 | 9 — Errores globales | ❌ 0/3 |
 | 3 — Competidores | ✅ 4/4 | 10 — Frontend | ❌ 0/12 |
-| 4 — Equipos | ❌ 0/3 | 11 — Docker completo | ❌ 0/4 |
+| 4 — Equipos | ✅ 3/3 | 11 — Docker completo | ❌ 0/4 |
 | 5 — Carreras | ❌ 0/3 | 12 — Testing final | ❌ 0/2 |
 | 6 — Inscripciones | ❌ 0/3 | 13 — Documentación | ❌ 0/5 |
 
-La implementación actual tiene `AuthController`/`AuthService` y
-`CompetitorController`/`CompetitorService`. Los módulos de equipos, carreras,
-inscripciones, resultados, auditoría y frontend todavía no tienen superficie
+La implementación funcional cubre `AuthController`/`AuthService`,
+`CompetitorController`/`CompetitorService` y ahora `TeamController`/`TeamService`.
+Carreras, inscripciones, resultados, auditoría y frontend aún no tienen superficie
 funcional; verifica archivos antes de asumir que existen.
 
 ## Qué es el proyecto

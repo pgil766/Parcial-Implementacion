@@ -33,9 +33,9 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Tests: 21 tests de competidores; suite total de 40 tests pasando
 
 ## Fase 4 — Equipos (Módulo 3)
-- [ ] CRUD + gestión de miembros
-- [ ] Reglas de negocio: mínimo 1 competidor, no duplicados, máximo configurable
-- [ ] Tests correspondientes
+- [x] CRUD + gestión de miembros
+- [x] Reglas de membresía: no duplicados, un solo equipo activo por competidor y máximo configurable; el mínimo antes de entrar a una carrera se valida al implementar carreras/inscripciones
+- [x] Tests correspondientes (5 pruebas unitarias de TeamService)
 
 ## Fase 5 — Carreras (Módulo 4)
 - [ ] CRUD + transiciones de estado (PATCH status)
