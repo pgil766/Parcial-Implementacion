@@ -40,6 +40,7 @@ public class RaceService {
     private final TeamMemberRepository teamMemberRepository;
 
     private final UserRepository userRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public RaceResponse create(RaceRequest request) {
@@ -96,6 +97,9 @@ public class RaceService {
         race.setOrganizer(getUser(request.organizerId()));
         if (request.status() != null && request.status() != race.getStatus()) {
             applyTransition(race, request.status());
+            if (request.status() == RaceStatus.CANCELLED) {
+                auditLogService.recordCurrentUser("RACE_CANCELLED", "Race", race.getId(), "Race cancelled");
+            }
         }
         return RaceResponse.from(saveWithDuplicateHandling(race));
     }
@@ -105,7 +109,11 @@ public class RaceService {
         Race race = raceRepository.findByIdForUpdate(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Race not found: " + id));
         applyTransition(race, status);
-        return RaceResponse.from(raceRepository.save(race));
+        Race saved = raceRepository.save(race);
+        if (status == RaceStatus.CANCELLED) {
+            auditLogService.recordCurrentUser("RACE_CANCELLED", "Race", saved.getId(), "Race cancelled");
+        }
+        return RaceResponse.from(saved);
     }
 
     @Transactional

@@ -44,6 +44,7 @@ public class RegistrationService {
     private final TeamMemberRepository teamMemberRepository;
     private final UserRepository userRepository;
     private final RaceResultRepository raceResultRepository;
+    private final AuditLogService auditLogService;
 
 
     @Transactional
@@ -115,7 +116,10 @@ public class RegistrationService {
         registration.setStartingPosition(startingPosition);
         registration.setStatus(RegistrationStatus.APPROVED);
         try {
-            return RegistrationResponse.from(registrationRepository.save(registration));
+            RegistrationResponse response = RegistrationResponse.from(registrationRepository.save(registration));
+            auditLogService.recordCurrentUser("REGISTRATION_APPROVED", "RaceRegistration", registration.getId(),
+                    "Registration approved");
+            return response;
         } catch (DataIntegrityViolationException ex) {
             throw new DuplicateResourceException("Starting position is already assigned in this race");
         }
@@ -129,7 +133,10 @@ public class RegistrationService {
         registration.setStatus(RegistrationStatus.REJECTED);
         registration.setStartingPosition(null);
         registration.setNotes(request.reason().trim());
-        return RegistrationResponse.from(registrationRepository.save(registration));
+        RegistrationResponse response = RegistrationResponse.from(registrationRepository.save(registration));
+        auditLogService.recordCurrentUser("REGISTRATION_REJECTED", "RaceRegistration", registration.getId(),
+                "Registration rejected: " + request.reason().trim());
+        return response;
     }
 
     @Transactional

@@ -36,6 +36,7 @@ public class AuthService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
@@ -58,11 +59,12 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.password()))
                 .role(viewerRole)
                 .build());
-
+        auditLogService.record(user, "USER_REGISTERED", "User", user.getId(),
+                "User account created through public registration");
         return buildAuthResponse(user);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new InvalidCredentialsException(INVALID_CREDENTIALS));
@@ -73,7 +75,7 @@ public class AuthService {
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException(INVALID_CREDENTIALS);
         }
-
+        auditLogService.record(user, "LOGIN", "User", user.getId(), "Successful login");
         return buildAuthResponse(user);
     }
 

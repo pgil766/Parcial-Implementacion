@@ -37,10 +37,9 @@ public class ResultService {
     private final RaceRepository raceRepository;
     private final CompetitorRepository competitorRepository;
     private final TeamRepository teamRepository;
-
     private final RaceRegistrationRepository registrationRepository;
     private final UserRepository userRepository;
-
+    private final AuditLogService auditLogService;
     @Transactional
     public ResultResponse create(Long raceId, ResultRequest request, String username) {
         Race race = getRaceForUpdate(raceId);
@@ -60,6 +59,8 @@ public class ResultService {
             throw new DuplicateResourceException("Result conflicts with an existing official result");
         }
         applyStatistics(saved, 1);
+        auditLogService.recordCurrentUser("RESULT_RECORDED", "RaceResult", saved.getId(),
+                "Official result recorded");
         return ResultResponse.from(saved);
     }
 
@@ -98,6 +99,8 @@ public class ResultService {
         result.setNotes(normalize(request.notes()));
         RaceResult saved = resultRepository.save(result);
         applyStatisticsDelta(saved, previousStatus, previousFinalPosition);
+        auditLogService.recordCurrentUser("RESULT_MODIFIED", "RaceResult", saved.getId(),
+                "Official result modified");
         return ResultResponse.from(saved);
     }
 

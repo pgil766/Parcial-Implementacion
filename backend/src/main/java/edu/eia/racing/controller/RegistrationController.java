@@ -52,14 +52,16 @@ public class RegistrationController {
     @PatchMapping("/registrations/{id}/approve")
     @PreAuthorize("hasAnyRole('ADMIN', 'RACE_ORGANIZER')")
     public ResponseEntity<RegistrationResponse> approve(@PathVariable @Positive Long id,
-            @Valid @RequestBody(required = false) RegistrationApprovalRequest request) {
+            @Valid @RequestBody(required = false) RegistrationApprovalRequest request,
+            Authentication authentication) {
         return ResponseEntity.ok(registrationService.approve(id, request));
     }
 
     @PatchMapping("/registrations/{id}/reject")
     @PreAuthorize("hasAnyRole('ADMIN', 'RACE_ORGANIZER')")
     public ResponseEntity<RegistrationResponse> reject(@PathVariable @Positive Long id,
-            @Valid @RequestBody RegistrationRejectionRequest request) {
+            @Valid @RequestBody RegistrationRejectionRequest request,
+            Authentication authentication) {
         return ResponseEntity.ok(registrationService.reject(id, request));
     }
 

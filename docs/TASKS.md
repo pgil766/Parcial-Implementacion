@@ -55,8 +55,8 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Tests: 7 pruebas unitarias de ResultService; incluyen sincronización de estadísticas persistidas
 
 ## Fase 8 — Log de auditoría (Módulo 8)
-- [ ] Registro automático de acciones clave (login, cambios, cancelaciones, decisiones)
-- [ ] Endpoint solo para ADMIN
+- [x] Registro automático de acciones clave (login, registro de usuarios, cambios de competidores, cancelaciones, decisiones de inscripción y resultados)
+- [x] Endpoint paginado de auditoría restringido a ADMIN
 
 ## Fase 9 — Manejo de errores global
 - [ ] Exception handler centralizado con formato estructurado del spec

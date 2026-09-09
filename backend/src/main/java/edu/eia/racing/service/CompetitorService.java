@@ -30,6 +30,7 @@ public class CompetitorService {
     private final RaceRegistrationRepository raceRegistrationRepository;
     private final RaceResultRepository raceResultRepository;
     private final TeamMemberRepository teamMemberRepository;
+    private final AuditLogService auditLogService;
 
     @Transactional
     public CompetitorResponse create(CompetitorRequest request) {
@@ -48,7 +49,10 @@ public class CompetitorService {
                 .originCountry(normalizeOptional(request.originCountry()))
                 .status(CompetitorStatus.ACTIVE)
                 .build();
-        return CompetitorResponse.from(saveWithDuplicateHandling(competitor), null);
+        Competitor saved = saveWithDuplicateHandling(competitor);
+        auditLogService.recordCurrentUser("COMPETITOR_CREATED", "Competitor", saved.getId(),
+                "Competitor created");
+        return CompetitorResponse.from(saved, null);
     }
 
     @Transactional(readOnly = true)
@@ -102,14 +106,20 @@ public class CompetitorService {
         competitor.setWeight(request.weight());
         competitor.setHeight(request.height());
         competitor.setOriginCountry(normalizeOptional(request.originCountry()));
-        return toResponse(saveWithDuplicateHandling(competitor));
+        Competitor saved = saveWithDuplicateHandling(competitor);
+        auditLogService.recordCurrentUser("COMPETITOR_UPDATED", "Competitor", saved.getId(),
+                "Competitor details updated");
+        return toResponse(saved);
     }
 
     @Transactional
     public CompetitorResponse updateStatus(Long id, CompetitorStatus status) {
         Competitor competitor = getCompetitor(id);
         competitor.setStatus(status);
-        return toResponse(competitorRepository.save(competitor));
+        Competitor saved = competitorRepository.save(competitor);
+        auditLogService.recordCurrentUser("COMPETITOR_STATUS_CHANGED", "Competitor", saved.getId(),
+                "Competitor status changed to " + status);
+        return toResponse(saved);
     }
 
     @Transactional

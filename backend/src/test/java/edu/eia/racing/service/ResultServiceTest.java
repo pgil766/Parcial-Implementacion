@@ -45,6 +45,7 @@ class ResultServiceTest {
     @Mock UserRepository userRepository;
     @Mock CompetitorRepository competitorRepository;
     @Mock TeamRepository teamRepository;
+    @Mock AuditLogService auditLogService;
     private ResultService service;
     private Race race;
     private Competitor competitor;
@@ -56,7 +57,7 @@ class ResultServiceTest {
     void setUp() {
         savedResults.clear();
         service = new ResultService(resultRepository, raceRepository, competitorRepository, teamRepository,
-                registrationRepository, userRepository);
+                registrationRepository, userRepository, auditLogService);
         race = Race.builder().id(1L).status(RaceStatus.IN_PROGRESS).type(RaceType.INDIVIDUAL).build();
         competitor = Competitor.builder().id(2L).name("Camel").nickname("camel")
                 .type(CompetitorType.CAMEL).status(CompetitorStatus.ACTIVE).build();

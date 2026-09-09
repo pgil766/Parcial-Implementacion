@@ -36,6 +36,8 @@ class CompetitorServiceTest {
     private RaceResultRepository raceResultRepository;
     @Mock
     private TeamMemberRepository teamMemberRepository;
+    @Mock
+    private AuditLogService auditLogService;
 
     @InjectMocks
     private CompetitorService competitorService;

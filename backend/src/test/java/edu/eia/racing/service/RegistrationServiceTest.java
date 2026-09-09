@@ -49,6 +49,7 @@ class RegistrationServiceTest {
     @Mock TeamMemberRepository teamMemberRepository;
     @Mock UserRepository userRepository;
     @Mock RaceResultRepository raceResultRepository;
+    @Mock AuditLogService auditLogService;
 
     private RegistrationService service;
     private Race race;
@@ -58,7 +59,7 @@ class RegistrationServiceTest {
     @BeforeEach
     void setUp() {
         service = new RegistrationService(registrationRepository, raceRepository, competitorRepository,
-                teamRepository, teamMemberRepository, userRepository, raceResultRepository);
+                teamRepository, teamMemberRepository, userRepository, raceResultRepository, auditLogService);
         race = Race.builder().id(10L).type(RaceType.INDIVIDUAL).status(RaceStatus.OPEN_FOR_REGISTRATION)
                 .registrationDeadline(LocalDateTime.now().plusHours(1)).maxParticipants(3).build();
         competitor = Competitor.builder().id(20L).name("Byte").nickname("byte")

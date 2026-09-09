@@ -40,13 +40,14 @@ class RaceServiceTest {
     @Mock RaceResultRepository raceResultRepository;
     @Mock TeamMemberRepository teamMemberRepository;
     @Mock UserRepository userRepository;
+    @Mock AuditLogService auditLogService;
 
     private RaceService service;
 
     @BeforeEach
     void setUp() {
         service = new RaceService(raceRepository, raceRegistrationRepository, raceResultRepository,
-                teamMemberRepository, userRepository);
+                teamMemberRepository, userRepository, auditLogService);
     }
 
     @Test

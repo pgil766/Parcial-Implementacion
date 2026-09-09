@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,6 +45,8 @@ class AuthServiceTest {
     private PasswordEncoder passwordEncoder;
     @Mock
     private JwtService jwtService;
+    @Mock
+    private AuditLogService auditLogService;
 
     @InjectMocks
     private AuthService authService;
@@ -79,6 +83,7 @@ class AuthServiceTest {
 
         ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
         verify(userRepository).save(savedUser.capture());
+        verify(auditLogService).record(any(User.class), eq("USER_REGISTERED"), eq("User"), isNull(), anyString());
         assertThat(savedUser.getValue().getRole().getName()).isEqualTo(RoleName.VIEWER);
         assertThat(savedUser.getValue().getPasswordHash()).isEqualTo("hashed-password");
         assertThat(response.role()).isEqualTo(RoleName.VIEWER);
@@ -119,6 +124,7 @@ class AuthServiceTest {
 
         AuthResponse response = authService.login(new LoginRequest("racer", "supersecret"));
 
+        verify(auditLogService).record(any(User.class), eq("LOGIN"), eq("User"), eq(1L), anyString());
         assertThat(response.role()).isEqualTo(RoleName.RACE_ORGANIZER);
         assertThat(response.refreshToken()).isEqualTo("refresh-token");
         assertThat(response.expiresIn()).isEqualTo(3600L);
