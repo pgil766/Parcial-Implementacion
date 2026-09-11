@@ -1,0 +1,175 @@
+Enum role_name {
+  ADMIN
+  RACE_ORGANIZER
+  VIEWER
+}
+
+Enum competitor_type {
+  DWARF
+  CAMEL
+  MEDIUM
+  OTHER
+}
+
+Enum competitor_status {
+  ACTIVE
+  INJURED
+  SUSPENDED
+  RETIRED
+}
+
+Enum team_status {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+Enum race_type {
+  INDIVIDUAL
+  TEAM
+  MIXED
+}
+
+Enum race_status {
+  DRAFT
+  OPEN_FOR_REGISTRATION
+  CLOSED_FOR_REGISTRATION
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+Enum registration_status {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+Enum result_status {
+  FINISHED
+  DISQUALIFIED
+  DID_NOT_FINISH
+  DID_NOT_START
+}
+
+Table roles {
+  id bigint [pk, increment]
+  name role_name [unique, not null]
+}
+
+Table users {
+  id bigint [pk, increment]
+  username varchar [unique, not null]
+  email varchar [unique, not null]
+  password_hash varchar [not null]
+  role_id bigint [not null, ref: > roles.id]
+  enabled boolean [not null, default: true]
+  created_at timestamp [not null]
+}
+
+Table competitors {
+  id bigint [pk, increment]
+  name varchar [not null]
+  nickname varchar [unique, not null]
+  type competitor_type [not null]
+  birth_date date
+  weight decimal [not null]
+  height decimal [not null]
+  origin_country varchar
+  status competitor_status [not null]
+  registered_at timestamp [not null]
+  wins int [not null, default: 0]
+  losses int [not null, default: 0]
+  races_completed int [not null, default: 0]
+}
+
+Table teams {
+  id bigint [pk, increment]
+  name varchar [unique, not null]
+  description text
+  created_at timestamp [not null]
+  status team_status [not null]
+  coach_name varchar
+  wins int [not null, default: 0]
+  losses int [not null, default: 0]
+  max_members int [not null]
+}
+
+Table team_members {
+  id bigint [pk, increment]
+  team_id bigint [not null, ref: > teams.id]
+  competitor_id bigint [not null, ref: > competitors.id]
+  joined_at timestamp [not null]
+  left_at timestamp
+  active boolean [not null, default: true]
+
+  indexes {
+    (team_id, competitor_id) [unique]
+  }
+}
+
+Table races {
+  id bigint [pk, increment]
+  name varchar [not null]
+  description text
+  scheduled_at timestamp [not null]
+  start_location varchar
+  end_location varchar
+  distance_meters decimal [not null]
+  max_participants int [not null]
+  type race_type [not null]
+  status race_status [not null]
+  organizer_id bigint [not null, ref: > users.id]
+  registration_deadline timestamp [not null]
+  created_at timestamp [not null]
+  updated_at timestamp [not null]
+}
+
+Table race_registrations {
+  id bigint [pk, increment]
+  race_id bigint [not null, ref: > races.id]
+  competitor_id bigint [ref: > competitors.id]
+  team_id bigint [ref: > teams.id]
+  registered_at timestamp [not null]
+  status registration_status [not null]
+  starting_position int
+  notes text
+  registered_by bigint [not null, ref: > users.id]
+
+  indexes {
+    (race_id, competitor_id) [unique]
+    (race_id, team_id) [unique]
+    (race_id, starting_position) [unique]
+  }
+}
+
+Table race_results {
+  id bigint [pk, increment]
+  race_id bigint [not null, ref: > races.id]
+  registration_id bigint [not null, unique, ref: > race_registrations.id]
+  starting_position int
+  final_position int
+  finish_time_seconds decimal
+  penalty_time_seconds decimal [not null, default: 0]
+  status result_status [not null]
+  notes text
+  recorded_by bigint [not null, ref: > users.id]
+  recorded_at timestamp [not null]
+
+  indexes {
+    (race_id, final_position) [unique]
+  }
+}
+
+Table audit_logs {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  action varchar [not null]
+  entity_type varchar
+  entity_id bigint
+  timestamp timestamp [not null]
+  description text
+  old_values text
+  new_values text
+}

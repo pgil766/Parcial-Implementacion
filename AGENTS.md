@@ -12,49 +12,25 @@ trabajar en este repo sin contexto previo. No duplica el detalle funcional compl
 3. `docs/TASKS.md` — checklist de las 14 fases del plan. Marca `[x]` al terminar cada
    ítem verificado (compila + tests pasan), no antes.
 
-## Estado actual y próximo paso
+## Estado actual
 
-**Fases 0 a 9 están implementadas en código.** La Fase 6 (Inscripciones,
-Módulo 5) incluye endpoints REST, aprobación/rechazo, elegibilidad `ACTIVE`,
-validación de equipos, compatibilidad de tipo, prevención de duplicados
-individual/equipo, posiciones de salida únicas, razones de rechazo y protección
-del historial con resultados. La transición a `IN_PROGRESS` revalida la
-elegibilidad de todas las inscripciones aprobadas.
+**Finalizado con lo solicitado (abierto a cambios post etapa final).**
 
-**Fase 7 (Resultados y clasificaciones, Módulo 6) está implementada.** Incluye
-registro/actualización/consulta de resultados, reglas de carrera y participante,
-posiciones únicas, cálculo de puntos y standings generales, de competidores y
-equipos.
+Las fases funcionales, frontend, auditoría, manejo global de errores,
+dockerización, testing y documentación están implementadas. El frontend React/Vite
+se encuentra en `frontend/`; la API y la base PostgreSQL se ejecutan mediante
+`compose.yml`.
 
-**Fase 8 (Auditoría) y Fase 9 (errores globales) están implementadas.**
+La suite backend ejecuta **80 pruebas, 0 fallos, 0 errores y 0 omitidos** con
+PostgreSQL 16 disponible en `DB_PORT=6969`. El build del frontend y la validación
+de configuración Compose también fueron verificados.
 
-**Fase 10 (Frontend / GUI) está implementada en código** bajo `frontend/`,
-incluyendo autenticación JWT, dashboard, CRUD operativo, equipos,
-inscripciones, resultados, standings, perfil y estados 403/404. Queda una
-última prueba pendiente: instalar dependencias npm, compilar y ejecutar smoke
-test cuando el registry npm vuelva a estar disponible.
+El diagrama editable está en `docs/diagrama-er.dbml` y la evidencia visual en
+`docs/evidence/Diagrama_ERD.png`. Las demás capturas de `docs/evidence/`
+corresponden al proceso de verificación realizado mediante Postman.
 
-**Siguiente paso: Fase 11 (Dockerización completa).** La prueba final de Fase 10
-se ejecutará posteriormente y no bloquea el avance de desarrollo.
-
-**Antes de nada, revisa `git status`.** El usuario hace los commits y push él mismo;
+Antes de nada, revisa `git status`. El usuario hace los commits y push él mismo;
 no toques git/GitHub salvo que lo pida explícitamente.
-
-| Fase | Items | Fase | Items |
-|---|---:|---|---:|
-| 8 — Auditoría | ✅ 2/2 | 11 — Docker completo | ❌ 0/4 |
-| 9 — Errores globales | ✅ 3/3 | 12 — Testing final | ❌ 0/2 |
-| 10 — Frontend | ⏸️ implementación lista / prueba final pendiente | 13 — Documentación | ❌ 0/5 |
-
-La implementación funcional cubre `AuthController`/`AuthService`,
-`CompetitorController`/`CompetitorService`, `TeamController`/`TeamService`,
-`RaceController`/`RaceService`, `RegistrationController`/`RegistrationService`,
-`ResultController`/`ResultService` y el cliente React en `frontend/`.
-La última verificación del frontend queda pendiente por la red npm.
-
-La suite completa ejecuta 73 pruebas y pasa con PostgreSQL 16 levantado mediante
-`DB_PORT=55432 DB_PASSWORD=change-me`. El puerto 5432 local estaba ocupado, por
-lo que la validación usó el puerto alterno sin modificar archivos de configuración.
 
 ## Qué es el proyecto
 
@@ -69,14 +45,13 @@ real y se evalúa en serio.
 |---|---|
 | Backend | Java 21 + Spring Boot 4.1.1 (Web/MVC, Data JPA, Validation, Security) |
 | Base de datos | PostgreSQL 16 (contenedor Docker, volumen nombrado `racing-league-db-data`) |
-| Frontend | React (aún no iniciado — planeado para Fase 10, no antes) |
-| Seguridad | JWT + Spring Security, hashing con BCrypt (dependencia `io.jsonwebtoken:jjwt` ya en el pom) |
-| Testing | JUnit 5 + Mockito (mínimo 15 tests significativos) |
-| Contenedores | Docker + Docker Compose (`compose.yml`, no `docker-compose.yml`) |
+| Frontend | React 19 + Vite + Nginx |
+| Seguridad | JWT + Spring Security, hashing con BCrypt |
+| Testing | JUnit 5 + Mockito (80 pruebas verificadas) |
+| Contenedores | Docker + Docker Compose (`compose.yml`) |
 
-**Fases 0, 1, 2, 3, 4, 5, 6 y 7 están implementadas.** Fase 1 conserva el
-diagrama ER pendiente. Las fases posteriores a la 1 siguen sin commit porque el
-usuario hace commits y push.
+La implementación completa se encuentra en `backend/` y `frontend/`, con tres
+servicios definidos en `compose.yml`: PostgreSQL, backend y frontend.
 - Backend generado en `backend/` vía Spring Initializr, con Maven Wrapper
   (`./mvnw` / `mvnw.cmd`) — **no asumas Maven global instalado**, usa siempre el
   wrapper. JDK 21 (Temurin) sí quedó instalado en la máquina de desarrollo.
@@ -140,25 +115,21 @@ usuario hace commits y push.
   - Solo acepta inscripciones aprobadas en carreras `IN_PROGRESS`; aplica posiciones
     únicas, estados válidos y puntos 10/7/5/3/1.
   - Expone standings generales, de competidores y de equipos.
-- Tests actuales: 73 descubiertos; la suite completa pasa con PostgreSQL 16 levantado
-  mediante `DB_PORT=55432 DB_PASSWORD=change-me`.
-- `application.yml` está parametrizado por variables de entorno
-  (`DB_HOST/DB_PORT/DB_NAME/DB_USERNAME/DB_PASSWORD/JWT_SECRET/JWT_EXPIRATION/
-  SERVER_PORT`), con `ddl-auto=update`.
-- `compose.yml` todavía contiene solo PostgreSQL; backend y frontend corresponden a
-  Fase 11.
-- El diagrama entidad-relación sigue pendiente.
+La suite completa ejecuta 80 pruebas y pasa con PostgreSQL 16 levantado mediante
+las variables de entorno documentadas en `README.md`. `application.yml` usa
+`DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD`, `JWT_SECRET`,
+`JWT_EXPIRATION`, `JWT_REFRESH_EXPIRATION`, `CORS_ALLOWED_ORIGINS` y `SERVER_PORT`.
+El frontend usa `VITE_API_URL`.
 
-## Estado objetivo
+El diagrama entidad-relación editable está en `docs/diagrama-er.dbml`; su PNG y
+las capturas del proceso de Postman están en `docs/evidence/`.
 
-Fases pendientes, en orden y una a la vez:
+## Estado posterior a la etapa final
 
-8. Log de auditoría (`AuditLog`, solo lectura para ADMIN).
-9. Manejo global completo de errores y validaciones.
-10. Frontend React.
-11. Dockerización completa.
-12. Revisión final de cobertura y tests.
-13. Documentación y entrega.
+El estado del proyecto es: **Finalizado con lo solicitado (abierto a cambios post
+etapa final)**. Cualquier modificación posterior debe conservar la separación
+frontend/API, la configuración por variables de entorno y la suite de pruebas
+existente.
 
 ## Reglas no negociables (repetidas de `context/CLAUDE.md`, por si no se lee)
 

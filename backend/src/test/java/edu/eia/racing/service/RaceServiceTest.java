@@ -102,6 +102,39 @@ class RaceServiceTest {
     }
 
     @Test
+    void closedRaceReopensWhileRegistrationDeadlineHasNotPassed() {
+        Race race = race(RaceStatus.CLOSED_FOR_REGISTRATION);
+        when(raceRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(race));
+        when(raceRepository.save(any(Race.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = service.updateStatus(1L, RaceStatus.OPEN_FOR_REGISTRATION);
+
+        assertEquals(RaceStatus.OPEN_FOR_REGISTRATION, response.status());
+        verify(raceRepository).save(race);
+    }
+
+    @Test
+    void closedRaceCannotReopenAfterRegistrationDeadline() {
+        Race race = race(RaceStatus.CLOSED_FOR_REGISTRATION);
+        race.setRegistrationDeadline(LocalDateTime.now().minusMinutes(1));
+        when(raceRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(race));
+
+        assertThrows(DuplicateResourceException.class,
+                () -> service.updateStatus(1L, RaceStatus.OPEN_FOR_REGISTRATION));
+        verify(raceRepository, never()).save(any());
+    }
+
+    @Test
+    void inProgressRaceCannotReturnToRegistration() {
+        Race race = race(RaceStatus.IN_PROGRESS);
+        when(raceRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(race));
+
+        assertThrows(DuplicateResourceException.class,
+                () -> service.updateStatus(1L, RaceStatus.OPEN_FOR_REGISTRATION));
+        verify(raceRepository, never()).save(any());
+    }
+
+    @Test
     void completedRaceCannotBeEdited() {
         Race race = race(RaceStatus.COMPLETED);
         when(raceRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(race));

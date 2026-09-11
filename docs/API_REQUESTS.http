@@ -1,0 +1,165 @@
+### Variables
+@baseUrl = http://localhost:8080/api
+@accessToken =
+@refreshToken =
+
+### Login admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### Perfil autenticado
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{accessToken}}
+
+### Renovar access token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Listar competidores
+GET {{baseUrl}}/competitors?page=0&size=25
+Authorization: Bearer {{accessToken}}
+
+### Crear competidor (ADMIN)
+POST {{baseUrl}}/competitors
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Byte Check 370",
+  "nickname": "seso-370",
+  "type": "CAMEL",
+  "birthDate": "2020-01-01",
+  "weight": 500.0,
+  "height": 210.0,
+  "originCountry": "Colombia"
+}
+
+### Listar equipos
+GET {{baseUrl}}/teams
+Authorization: Bearer {{accessToken}}
+
+### Crear equipo (ADMIN)
+POST {{baseUrl}}/teams
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Polnito-370",
+  "description": "Equipo de demostración",
+  "coachName": "EIA Coach",
+  "maxMembers": 5,
+  "status": "ACTIVE"
+}
+
+### Añadir miembro (ADMIN)
+POST {{baseUrl}}/teams/{teamId}/members/{competitorId}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{}
+
+### Listar carreras
+GET {{baseUrl}}/races
+Authorization: Bearer {{accessToken}}
+
+### Crear carrera (ADMIN/RACE_ORGANIZER)
+POST {{baseUrl}}/races
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Oasis Grand Prix 370",
+  "description": "Carrera mixta de demostración",
+  "scheduledAt": "2027-01-15T14:30:00",
+  "startLocation": "EIA Campus",
+  "endLocation": "Oasis",
+  "distanceMeters": 1000.0,
+  "maxParticipants": 20,
+  "type": "MIXED",
+  "organizerId": 2,
+  "registrationDeadline": "2027-01-10T23:59:00"
+}
+
+### Consultar inscripciones de una carrera
+GET {{baseUrl}}/races/{raceId}/registrations
+Authorization: Bearer {{accessToken}}
+
+### Crear inscripción (ADMIN/RACE_ORGANIZER)
+POST {{baseUrl}}/races/{raceId}/registrations
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "competitorId": 1,
+  "startingPosition": 1,
+  "notes": "Inscripción de demostración"
+}
+
+### Aprobar inscripción
+PATCH {{baseUrl}}/registrations/{registrationId}/approve
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "startingPosition": 1
+}
+
+### Rechazar inscripción
+PATCH {{baseUrl}}/registrations/{registrationId}/reject
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "reason": "Competidor no elegible para esta carrera"
+}
+
+### Consultar resultados
+GET {{baseUrl}}/races/{raceId}/results
+Authorization: Bearer {{accessToken}}
+
+### Registrar resultado (ADMIN/RACE_ORGANIZER)
+POST {{baseUrl}}/races/{raceId}/results
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "registrationId": 1,
+  "startingPosition": 1,
+  "finalPosition": 1,
+  "finishTimeSeconds": 95.5,
+  "penaltyTimeSeconds": 0,
+  "status": "FINISHED",
+  "notes": "Resultado oficial"
+}
+
+### Standings generales
+GET {{baseUrl}}/standings
+Authorization: Bearer {{accessToken}}
+
+### Standings de competidores
+GET {{baseUrl}}/standings/competitors
+Authorization: Bearer {{accessToken}}
+
+### Standings de equipos
+GET {{baseUrl}}/standings/teams
+Authorization: Bearer {{accessToken}}
+
+### Auditoría (ADMIN)
+GET {{baseUrl}}/audit-logs?page=0&size=25
+Authorization: Bearer {{accessToken}}
+
+### Error esperado: body de carrera inválido (ADMIN)
+POST {{baseUrl}}/races
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{}

@@ -411,7 +411,10 @@ DB_USERNAME
 DB_PASSWORD
 JWT_SECRET
 JWT_EXPIRATION
-API_BASE_URL
+JWT_REFRESH_EXPIRATION
+CORS_ALLOWED_ORIGINS
+VITE_API_URL
+SERVER_PORT
 ```
 
 El repo puede incluir un `.env.example`, pero **nunca** con credenciales reales.
@@ -473,22 +476,10 @@ testing, usuarios de ejemplo, ejemplos de requests API, limitaciones conocidas, 
 
 - Repositorio GitHub con código fuente completo.
 - Backend, BD y GUI dockerizados.
-- Diagrama entidad-relación.
-- Colección Postman/Insomnia para verificar el backend.
+- Diagrama entidad-relación editable y evidencia visual.
+- Colección `docs/API_REQUESTS.http` para verificar el backend.
+- Capturas del proceso de verificación mediante Postman.
 - Reporte técnico (arquitectura, modelo de datos, seguridad, interfaz, reglas de negocio, testing, Docker).
-- Video de demostración de 8 a 12 minutos.
-
-**Requisitos del video:**
-- Participación de todo el equipo.
-- Mostrar login y restricciones de rol.
-- Crear un competidor y un equipo.
-- Crear una carrera e inscribir participantes.
-- Registrar resultados y mostrar clasificaciones.
-- Demostrar al menos 2 errores manejados correctamente.
-- Mostrar la GUI ejecutando el flujo principal.
-- Mostrar los contenedores corriendo.
-- Mostrar los tests automatizados ejecutándose.
-- El video no puede consistir únicamente en leer diapositivas.
 
 ## 14. Escenario de Demostración Sugerido
 

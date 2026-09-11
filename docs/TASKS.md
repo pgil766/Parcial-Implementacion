@@ -14,7 +14,7 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Definir entidades JPA: User, Role, Competitor, Team, TeamMember, Race, RaceRegistration, RaceResult, AuditLog
 - [x] Definir enums: CompetitorType, CompetitorStatus, RaceType, RaceStatus, RegistrationStatus, ResultStatus (+ RoleName, TeamStatus)
 - [x] Configurar relaciones, constraints únicos, índices
-- [ ] Diagrama entidad-relación (puede generarse después, pero anota decisiones ahora)
+- [x] Diagrama entidad-relación editable en `docs/diagrama-er.dbml` y evidencia visual en `docs/evidence/Diagrama_ERD.png`
 - [x] Seed de datos iniciales (1 admin, 1 organizer, 1 viewer, 5 dwarfs, 2 camels, 2 medium, 2 equipos, 3 carreras)
 
 ## Fase 2 — Autenticación y seguridad (Módulo 1)
@@ -41,12 +41,12 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] CRUD + transiciones de estado (PATCH status)
 - [x] Reglas de negocio: fecha futura, deadline < inicio, no editar si COMPLETED; capacidad, tipo y organizador consistentes
 - [x] Concurrencia: bloqueo pesimista en mutaciones y protección del historial oficial
-- [x] Tests: 10 pruebas unitarias de RaceService; suite total de 73 tests pasando
+- [x] Tests: 10 pruebas unitarias de RaceService; suite total de 80 tests pasando
 
 ## Fase 6 — Inscripciones (Módulo 5)
 - [x] Endpoints de inscripción, aprobación, rechazo
 - [x] Reglas de negocio: elegibilidad ACTIVE, no duplicados, tipo debe coincidir, posiciones de salida únicas y razón de rechazo
-- [x] Tests: 10 pruebas unitarias de RegistrationService; suite total de 73 tests pasando
+- [x] Tests: 10 pruebas unitarias de RegistrationService; suite total de 80 tests pasando
 
 ## Fase 7 — Resultados y clasificaciones (Módulo 6)
 - [x] Registro de resultados + cálculo de puntos
@@ -64,27 +64,29 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] Validaciones con anotaciones (@NotNull, @NotBlank, @Positive, etc.)
 
 ## Fase 10 — Frontend / GUI (Módulo 7)
-- [ ] Login + manejo de token
-- [ ] Dashboard conectado al REST API
-- [ ] Pantallas de competidores (lista, detalle operativo, crear/editar)
-- [ ] Pantallas de equipos (lista, detalle operativo y gestión de miembros)
-- [ ] Pantallas de carreras (lista, detalle operativo, crear/editar)
-- [ ] Gestión de inscripciones
-- [ ] Registro de resultados
-- [ ] Standings/leaderboard
-- [ ] Perfil + logout
-- [ ] Pantallas de acceso denegado / 404
-- [ ] Estados de carga, vacío y error en las listas principales
-- [ ] Ocultar/deshabilitar acciones según rol
+- [x] Login + manejo de token
+- [x] Dashboard conectado al REST API
+- [x] Pantallas de competidores (lista, detalle operativo, crear/editar)
+- [x] Pantallas de equipos (lista, detalle operativo y gestión de miembros)
+- [x] Pantallas de carreras (lista, detalle operativo, crear/editar)
+- [x] Gestión de inscripciones
+- [x] Registro de resultados
+- [x] Standings/leaderboard
+- [x] Perfil + logout
+- [x] Pantallas de acceso denegado / 404
+- [x] Estados de carga, vacío y error en las listas principales
+- [x] Ocultar/deshabilitar acciones según rol
 
 > Frontend funcional en `frontend/`: React/Vite, cliente JWT, CRUD de
 > competidores/carreras, gestión de equipos, inscripciones, resultados,
 > standings, perfil y estados de acceso.
 >
-> **Pausa de verificación:** la implementación de Fase 10 quedó terminada,
-> pero la prueba final (`npm install`, `npm run build` y smoke test) se pospone
-> por indisponibilidad temporal del registry npm. Esta verificación queda como
-> última prueba de Fase 10 y no bloquea el inicio de la Fase 11.
+> **Verificación ejecutada:** `npm install --no-package-lock`, `npm run build` y
+> smoke test con `npm run preview` pasan. Se verificaron las rutas autenticadas
+> desconocidas (404) y las operaciones restringidas para `VIEWER` (403).
+> La UI valida campos requeridos y valores positivos antes de llamar a la API;
+> los errores 401 intentan renovar la sesión con el refresh token y, si falla,
+> limpian la sesión y devuelven al login.
 
 ## Fase 11 — Dockerización completa
 - [x] Dockerfile backend
@@ -92,18 +94,26 @@ anterior compile, tenga tests pasando y tú la hayas revisado.
 - [x] `compose.yml` final con todos los servicios, red, volumen nombrado
 - [ ] Verificar que `docker compose up -d` levanta TODO desde cero
 
-> Implementación Docker completada y revisada. `docker compose config -q`,
-> validación sintáctica de ambos Dockerfiles y empaquetado backend pasan.
-> El build completo y el smoke test desde cero quedan pendientes porque el
-> registry npm agotó el tiempo de espera al resolver dependencias frontend.
+> `docker compose config -q`, la validación sintáctica de ambos Dockerfiles,
+> el empaquetado backend y un arranque/smoke test del stack con la configuración
+> actual pasan. Falta repetirlo desde volumen vacío para cerrar el criterio
+> "desde cero"; ese paso queda documentado para el usuario.
 
 ## Fase 12 — Testing (mínimo 15 tests significativos)
-- [ ] Revisar cobertura contra la lista de casos sugeridos en el spec
-- [ ] Agregar tests de integración si faltan
+- [x] Revisar cobertura contra la lista de casos sugeridos en el spec
+- [x] Agregar tests de integración si faltan
+>
+> **Resultado:** suite backend completa con PostgreSQL: 80 tests, 0 fallos,
+> 0 errores, 0 omitidos. Se añadieron pruebas de integración para autorización
+> de creación de carreras (viewer 403, admin 201), y reglas de reapertura dentro
+> del deadline.
 
 ## Fase 13 — Documentación y entrega
-- [ ] README completo (ver spec sección 11)
-- [ ] Diagrama entidad-relación final
-- [ ] Colección Postman/Insomnia
-- [ ] Reporte técnico
-- [ ] Grabar video de demo (8-12 min) siguiendo el escenario sugerido del spec
+- [x] README completo (ver spec sección 11)
+- [x] Diagrama entidad-relación editable documentado en `docs/diagrama-er.dbml`
+- [x] Colección API versionable en `docs/API_REQUESTS.http`
+- [x] Reporte técnico en `docs/REPORTE_TECNICO.md`
+- [x] Evidencia del flujo API mediante capturas del proceso de Postman en `docs/evidence/`
+
+> Pendiente para el usuario: completar integrantes/metadatos, ejecutar Docker desde
+> volumen vacío y realizar commit/push.

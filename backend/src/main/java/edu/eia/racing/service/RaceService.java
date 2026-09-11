@@ -138,11 +138,16 @@ public class RaceService {
         if (TERMINAL_STATUSES.contains(current)) {
             throw new DuplicateResourceException("Race status cannot change after it is " + current);
         }
+        boolean reopeningWithinDeadline = current == RaceStatus.CLOSED_FOR_REGISTRATION
+                && target == RaceStatus.OPEN_FOR_REGISTRATION
+                && race.getRegistrationDeadline() != null
+                && !LocalDateTime.now().isAfter(race.getRegistrationDeadline());
         boolean valid = target == RaceStatus.CANCELLED
                 || current == RaceStatus.DRAFT && target == RaceStatus.OPEN_FOR_REGISTRATION
                 || current == RaceStatus.OPEN_FOR_REGISTRATION && target == RaceStatus.CLOSED_FOR_REGISTRATION
                 || current == RaceStatus.CLOSED_FOR_REGISTRATION && target == RaceStatus.IN_PROGRESS
-                || current == RaceStatus.IN_PROGRESS && target == RaceStatus.COMPLETED;
+                || current == RaceStatus.IN_PROGRESS && target == RaceStatus.COMPLETED
+                || reopeningWithinDeadline;
         if (!valid) {
             throw new DuplicateResourceException("Invalid race status transition: " + current + " -> " + target);
         }

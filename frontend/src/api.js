@@ -4,8 +4,7 @@ export class ApiError extends Error {
   constructor(message, status = 0) { super(message); this.status = status; }
 }
 
-async function request(path, options = {}) {
-  const token = localStorage.getItem('racing_access_token');
+async function rawRequest(path, options = {}, token = localStorage.getItem('racing_access_token')) {
   const headers = { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...(options.headers || {}) };
   if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
@@ -14,10 +13,29 @@ async function request(path, options = {}) {
   if (!response.ok) throw new ApiError(body.message || `Request failed (${response.status})`, response.status);
   return body;
 }
+
+async function request(path, options = {}, allowRefresh = true) {
+  try {
+    return await rawRequest(path, options);
+  } catch (error) {
+    const refreshToken = localStorage.getItem('racing_refresh_token');
+    if (error.status !== 401 || !allowRefresh || !refreshToken || path === '/auth/login' || path === '/auth/refresh') throw error;
+    try {
+      const auth = await rawRequest('/auth/refresh', json('POST', { refreshToken }), null);
+      saveSession(auth);
+      return await request(path, options, false);
+    } catch (refreshError) {
+      clearSession();
+      window.dispatchEvent(new CustomEvent('racing:session-expired'));
+      throw refreshError;
+    }
+  }
+}
 const json = (method, payload) => ({ method, body: JSON.stringify(payload) });
 
 export const api = {
   login: (payload) => request('/auth/login', json('POST', payload)),
+  refresh: (refreshToken) => request('/auth/refresh', json('POST', { refreshToken }), false),
   profile: () => request('/auth/profile'),
   races: () => request('/races'),
   race: (id) => request(`/races/${id}`),
